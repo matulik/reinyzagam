@@ -13,7 +13,7 @@ def login(request):
     if Login.auth(request):
         return redirect('/rest/')
     else:
-        # Jeżeli zostało wysłane zapytanie
+        # Wykonaj, jeżeli zostało wysłane zapytanie
         if request.method == 'POST':
             # Pobieranie danych z zapytania
             username = request.POST['username']
@@ -30,6 +30,7 @@ def login(request):
             if user.checkPassword(password):
                 print u'Login succesfully'
                 Login.login(request)
+                # Przekierowanie do odpowiedniej podstrony
                 return redirect('/rest/')
             else:
                 msg = u'Error. Bad username or password.'
