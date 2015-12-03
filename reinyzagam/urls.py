@@ -1,3 +1,4 @@
+#coding=utf8
 """reinyzagam URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -15,8 +16,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 
-# REST
-from rest_framework import routers
+# REST - Przeglądanie API
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from User import views, serializers
