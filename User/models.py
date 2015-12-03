@@ -48,6 +48,14 @@ class User(models.Model):
             print u'Podane hasło nie jest zgodne z istniejącym.'
             return False
 
+    def save(self, *args, **kwargs):
+        """
+        Metoda nadpisana - jest to wymagane aby przy zapisywaniu instancji poprzez REST
+        hasło zostało zaszyfrowane
+        """
+        self.password = self.hashPassword(self.password)
+        super(User, self).save(*args, **kwargs)
+
 class Login():
     @staticmethod
     def login(request):

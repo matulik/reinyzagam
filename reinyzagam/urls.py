@@ -1,3 +1,4 @@
+#coding=utf8
 """reinyzagam URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -15,10 +16,18 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 
-from User import views
+# REST - Przeglądanie API
+from rest_framework.urlpatterns import format_suffix_patterns
 
-urlpatterns = [
+from User import views, serializers
+
+urlpatterns = format_suffix_patterns([
     url(r'^$', views.login),
     url(r'^login/$', views.login),
-    url(r'^logout/$', views.logout)
-]
+    url(r'^logout/$', views.logout),
+    url(r'^rest/$', views.api_root),
+
+    # REST
+    url(r'^rest/users_list/$', views.users_list, name='users_list'),
+    url(r'^rest/user_detail/(?P<pk>[0-9]+)/$', views.user_detail, name='user_detail')
+])
