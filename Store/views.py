@@ -63,7 +63,6 @@ def location_detail(request, pk):
             loc.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 # Buyer
 @api_view(['GET', 'POST'])
 def buyers_list(request):
@@ -111,4 +110,53 @@ def buyer_detail(request, pk):
 
         if request.method == 'DELETE':
             buyer.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+# Category
+@api_view(['GET', 'POST'])
+def categories_list(request):
+    if not Login.auth(request):
+        msg = u'You are logged out. Please login first.'
+        return render_to_response('login.html', { 'msg': msg }, context_instance=RequestContext(request))
+    else:
+        # Dla metody GET - pobierz listę
+        if request.method == 'GET':
+            cat = Category.objects.all()
+            serializer = CategorySerializer(cat, context={'request': request}, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Dla metody POST - Utwórz nowego użytkownika
+        if request.method == 'POST':
+            serializer = CategorySerializer(context={'request': request}, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def category_detail(request, pk):
+    if not Login.auth(request):
+        msg = u'You are logged out. Please login first.'
+        return render_to_response('login.html', { 'msg': msg }, context_instance=RequestContext(request))
+    else:
+        try:
+            cat = Category.objects.get(id=pk)
+        except Category.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            serializer = CategorySerializer(cat, context={'request': request})
+            return Response(serializer.data)
+
+        if request.method == 'PUT':
+            serializer = CategorySerializer(cat, context={'request': request}, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.method == 'DELETE':
+            cat.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
