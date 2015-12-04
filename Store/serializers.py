@@ -41,6 +41,7 @@ class BuyerSerializer(serializers.Serializer):
         instance.save()
         return instance
 
+
 class CategorySerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name='category_detail', read_only=True)
     id = serializers.IntegerField(read_only=True)
@@ -51,7 +52,35 @@ class CategorySerializer(serializers.Serializer):
         return Category.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
+        print instance
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
+        instance.save()
+        return instance
+
+
+class ArticleSerializer(serializers.Serializer):
+    url = serializers.HyperlinkedIdentityField(view_name='article_detail', read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=500, required=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), required=True)
+    quantity = serializers.IntegerField(default=0, required=False, read_only=True)
+    cost = serializers.DecimalField(decimal_places=2, max_digits=6, required=True)
+    dateAdded = serializers.DateTimeField(default=timezone.now())
+    whoAdded = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
+
+    def create(self, validated_data):
+        # return Article.objects.create(**validated_data)
+        name = validated_data.get('name')
+        category = validated_data.get('category')
+        cost = validated_data.get('cost')
+        request = self.context['request']
+        article = Article.add_article(name=name, categoryID=category.id, cost=cost, request=request)
+        return article
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.category = validated_data.get('category', instance.category)
+        instance.cost = validated_data.get('cost', instance.cost)
         instance.save()
         return instance

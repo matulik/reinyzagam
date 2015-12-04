@@ -47,4 +47,8 @@ urlpatterns = format_suffix_patterns([
     url(r'^rest/categories_list/$', store_views.categories_list, name='categories_list'),
     url(r'^rest/category_detail/(?P<pk>[0-9]+)/$', store_views.category_detail, name='category_detail'),
 
+    # Article
+    url(r'^rest/articles_list/$', store_views.articles_list, name='articles_list'),
+    url(r'^rest/article_detail/(?P<pk>[0-9]+)/$', store_views.article_detail, name='article_detail'),
+
 ])
