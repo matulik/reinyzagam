@@ -93,6 +93,7 @@ class Article(models.Model):
         article.cost = Decimal(float(cost))
         article.whoAdded = Login.get_current_user(request)
         article.save()
+        return article
 
     @staticmethod
     def exist(name):
