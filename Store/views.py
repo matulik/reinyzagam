@@ -10,9 +10,11 @@ from rest_framework.decorators import api_view
 
 from User.models import Login
 
-from Store.models import Location
-from Store.serializers import LocationSerializer
+from Store.models import *
+from Store.serializers import *
 
+
+# Location
 @api_view(['GET', 'POST'])
 def locations_list(request):
     if not Login.auth(request):
@@ -21,8 +23,8 @@ def locations_list(request):
     else:
         # Dla metody GET - pobierz listę
         if request.method == 'GET':
-            users = Location.objects.all()
-            serializer = LocationSerializer(users, context={'request': request}, many=True)
+            locs = Location.objects.all()
+            serializer = LocationSerializer(locs, context={'request': request}, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         # Dla metody POST - Utwórz nowego użytkownika
@@ -41,16 +43,16 @@ def location_detail(request, pk):
         return render_to_response('login.html', { 'msg': msg }, context_instance=RequestContext(request))
     else:
         try:
-            user = Location.objects.get(id=pk)
+            loc = Location.objects.get(id=pk)
         except Location.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         if request.method == 'GET':
-            serializer = LocationSerializer(user, context={'request': request})
+            serializer = LocationSerializer(loc, context={'request': request})
             return Response(serializer.data)
 
         if request.method == 'PUT':
-            serializer = LocationSerializer(user, context={'request': request}, data=request.data, partial=True)
+            serializer = LocationSerializer(loc, context={'request': request}, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
@@ -58,5 +60,55 @@ def location_detail(request, pk):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         if request.method == 'DELETE':
-            user.delete()
+            loc.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Buyer
+@api_view(['GET', 'POST'])
+def buyers_list(request):
+    if not Login.auth(request):
+        msg = u'You are logged out. Please login first.'
+        return render_to_response('login.html', { 'msg': msg }, context_instance=RequestContext(request))
+    else:
+        # Dla metody GET - pobierz listę
+        if request.method == 'GET':
+            buyers = Buyer.objects.all()
+            serializer = BuyerSerializer(buyers, context={'request': request}, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Dla metody POST - Utwórz nowego użytkownika
+        if request.method == 'POST':
+            serializer = BuyerSerializer(context={'request': request}, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def buyer_detail(request, pk):
+    if not Login.auth(request):
+        msg = u'You are logged out. Please login first.'
+        return render_to_response('login.html', { 'msg': msg }, context_instance=RequestContext(request))
+    else:
+        try:
+            buyer = Buyer.objects.get(id=pk)
+        except Buyer.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            serializer = BuyerSerializer(buyer, context={'request': request})
+            return Response(serializer.data)
+
+        if request.method == 'PUT':
+            serializer = BuyerSerializer(buyer, context={'request': request}, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.method == 'DELETE':
+            buyer.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
