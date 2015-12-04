@@ -64,6 +64,7 @@ def api_root(request):
     '''
     return Response({
         'users_list': reverse('users_list', request=request),
+        'locations_list': reverse('locations_list', request=request),
     })
 
 @api_view(['GET', 'POST'])
