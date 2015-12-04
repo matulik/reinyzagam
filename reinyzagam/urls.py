@@ -19,15 +19,24 @@ from django.conf.urls import include, url
 # REST - Przeglądanie API
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from User import views, serializers
+from User import views as user_views
+from Store import views as store_views
+
 
 urlpatterns = format_suffix_patterns([
-    url(r'^$', views.login),
-    url(r'^login/$', views.login),
-    url(r'^logout/$', views.logout),
-    url(r'^rest/$', views.api_root),
+    url(r'^$', user_views.login),
+    url(r'^login/$', user_views.login),
+    url(r'^logout/$', user_views.logout),
+    url(r'^rest/$', user_views.api_root),
 
-    # REST
-    url(r'^rest/users_list/$', views.users_list, name='users_list'),
-    url(r'^rest/user_detail/(?P<pk>[0-9]+)/$', views.user_detail, name='user_detail')
+    ### REST
+    ## User
+    url(r'^rest/users_list/$', user_views.users_list, name='users_list'),
+    url(r'^rest/user_detail/(?P<pk>[0-9]+)/$', user_views.user_detail, name='user_detail'),
+
+    ## Store
+    # Location
+    url(r'^rest/locations_list/$', store_views.locations_list, name='locations_list'),
+    url(r'^rest/location_detail/(?P<pk>[0-9]+)/$', store_views.location_detail, name='location_detail'),
+
 ])

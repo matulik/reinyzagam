@@ -1,6 +1,6 @@
 #coding=utf8
 from User.models import User
-from rest_framework import serializers, viewsets
+from rest_framework import serializers
 
 class UserSerializer(serializers.Serializer):
     '''
@@ -10,7 +10,8 @@ class UserSerializer(serializers.Serializer):
     '''
 
     # Pole jako hiperłącze - umożliwia przejście użytkownika o danym id. Tylko do odczytu
-    id = serializers.HyperlinkedIdentityField(view_name='user_detail', read_only=True)
+    url = serializers.HyperlinkedIdentityField(view_name='user_detail', read_only=True)
+    id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(max_length=50, required=True)
     password = serializers.CharField(max_length=50, required=True)
     firstname = serializers.CharField(max_length=50, required=True)
