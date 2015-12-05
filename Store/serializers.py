@@ -84,3 +84,49 @@ class ArticleSerializer(serializers.Serializer):
         instance.cost = validated_data.get('cost', instance.cost)
         instance.save()
         return instance
+
+class OrderSerializer(serializers.Serializer):
+    url = serializers.HyperlinkedIdentityField(view_name='order_detail', read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    cost = serializers.DecimalField(decimal_places=2, max_digits=6, default=0.00, read_only=True)
+    discount = serializers.DecimalField(decimal_places=2, max_digits=6, default=0.00, required=False)
+    dateOrder = serializers.DateTimeField(default=timezone.now(), read_only=True)
+    dateSpend = serializers.DateTimeField(required=False, read_only=True)
+    released = serializers.BooleanField(required=False, default=False)
+    buyer = serializers.PrimaryKeyRelatedField(queryset=Buyer.objects.all())
+    whoAdded = serializers.PrimaryKeyRelatedField(read_only=True)
+    whoReleased = serializers.PrimaryKeyRelatedField(read_only=True)
+    ## TODO: ArticleUnit list - After ArticleUnit implemetation
+    ##
+
+
+    def create(self, validated_data):
+        discount = validated_data.get('discount')
+        released = validated_data.get('released')
+        buyer = validated_data.get('buyer')
+        request = self.context['request']
+        order = Order.add_order(buyer, request)
+        order.discount = discount
+        if released:
+            order.set_released(request)
+        else :
+            order.set_unreleased()
+        order.recount_order()
+        return order
+
+    def update(self, instance, validated_data):
+        discount = validated_data.get('discount')
+        released = validated_data.get('released')
+        buyer = validated_data.get('buyer')
+        request = self.context['request']
+        if discount:
+            instance.discount = discount
+        if buyer:
+            instance.buyer = buyer
+        if instance.released == True and released == False:
+            instance.set_unreleased()
+        elif instance.released == False and released == True:
+            instance.set_released(request=request)
+
+        instance.save()
+        return instance

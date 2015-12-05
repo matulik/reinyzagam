@@ -68,6 +68,7 @@ def api_root(request):
         'buyers_list': reverse('buyers_list', request=request),
         'categories_list': reverse('categories_list', request=request),
         'articles_list': reverse('articles_list', request=request),
+        'orders_list': reverse('orders_list', request=request),
 
     })
 
