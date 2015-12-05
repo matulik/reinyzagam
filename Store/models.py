@@ -236,7 +236,7 @@ class Order(models.Model):
     cost = models.DecimalField(decimal_places=2, max_digits=6, default=0.00, verbose_name=u'Ogólny koszt')
     discount = models.DecimalField(decimal_places=2, max_digits=6, default=0.00)
     dateOrder = models.DateTimeField(default=timezone.now)
-    dateSpend = models.DateTimeField(default=timezone.now)
+    dateSpend = models.DateTimeField(default=None, null=True)
     released = models.BooleanField(default=False)
     buyer = models.ForeignKey(Buyer, verbose_name=u'Klient')
     whoAdded = models.ForeignKey(User, related_name='whoAdded')
@@ -254,14 +254,14 @@ class Order(models.Model):
         order.buyer = buyer
         order.whoAdded = Login.get_current_user(request)
         order.save()
-        return order.id
+        return order
 
     def recount_order(self):
         """
         Metoda przelicza nową wartość zamówienia
         :return: brak - nowa wartość przechowywana jest w prametrze cost
         """
-        articles = ArticleUnit.objects.filter(orderID=self)
+        articles = ArticleUnit.objects.filter(order=self)
         print len(articles)
         article_sum = Decimal('0')
         for a in articles:
@@ -277,6 +277,7 @@ class Order(models.Model):
         :return: brak
         """
         self.released = True
+        self.dateSpend = timezone.now()
         self.whoReleased = Login.get_current_user(request)
         self.save()
 
