@@ -258,3 +258,52 @@ def order_detail(request, pk):
         if request.method == 'DELETE':
             ord.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+# ArticleUnit
+@api_view(['GET', 'POST'])
+def articleunits_list(request):
+    if not Login.auth(request):
+        msg = u'You are logged out. Please login first.'
+        return render_to_response('login.html', { 'msg': msg }, context_instance=RequestContext(request))
+    else:
+        # Dla metody GET - pobierz listę
+        if request.method == 'GET':
+            au = ArticleUnit.objects.all()
+            serializer = ArticleUnitSerializer(au, context={'request': request}, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Dla metody POST - Utwórz nowego użytkownika
+        if request.method == 'POST':
+            serializer = ArticleUnitSerializer(context={'request': request}, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def articleunit_detail(request, pk):
+    if not Login.auth(request):
+        msg = u'You are logged out. Please login first.'
+        return render_to_response('login.html', { 'msg': msg }, context_instance=RequestContext(request))
+    else:
+        try:
+            au = ArticleUnit.objects.get(id=pk)
+        except OrderSerializer.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'GET':
+            serializer = ArticleUnitSerializer(au, context={'request': request})
+            return Response(serializer.data)
+
+        if request.method == 'PUT':
+            serializer = ArticleUnitSerializer(au, context={'request': request}, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.method == 'DELETE':
+            au.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
