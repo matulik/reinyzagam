@@ -318,6 +318,10 @@ class Order(models.Model):
         """
         self.delete()
 
+    def get_articleunits(self):
+        au = ArticleUnit.objects.filter(order=self)
+        return au
+
 
 class Location(models.Model):
     """
@@ -403,12 +407,13 @@ class ArticleUnit(models.Model):
         article.increaseQuanity()
         articleunit.article = article
         articleunit.order = order
-        if dateInserted:
-            articleunit.dateInserted = dateInserted
-        else:
+        if dateInserted == None:
             articleunit.dateInserted = timezone.now
+        else:
+            articleunit.dateInserted = dateInserted
         articleunit.whoAdded = Login.get_current_user(request)
         articleunit.save()
+        return articleunit
 
     def set_to_order(self, orderID):
         """
@@ -416,10 +421,14 @@ class ArticleUnit(models.Model):
         :param orderID: id zamówienia
         :return: brak
         """
+        if orderID == None:
+            self.order = None
+
         self.orderID = Order.objects.get(id=orderID)
         self.available = False
         order = Order.objects.get(id=int(orderID))
         order.recount_order()
+        self.order = order
         self.save()
 
     def change_articleunit(self, location, article, order, dateInserted):

@@ -85,6 +85,50 @@ class ArticleSerializer(serializers.Serializer):
         instance.save()
         return instance
 
+class ArticleUnitSerializer(serializers.Serializer):
+    url = serializers.HyperlinkedIdentityField(view_name='articleunit_detail', read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all(), required=True)
+    article = serializers.PrimaryKeyRelatedField(queryset=Article.objects.all(), required=True)
+    order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(), required=False)
+    dateInserted = serializers.DateTimeField(default=timezone.now(), read_only=True)
+    available = serializers.BooleanField(default=True, required=False)
+    whoAdded = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    def create(self, validated_data):
+        location = validated_data.get('location')
+        article = validated_data.get('article')
+        order = validated_data.get('order')
+        available = validated_data.get('available')
+        request = self.context['request']
+        au = ArticleUnit.add_articleunit(location=location, article=article, order=order, dateInserted=timezone.now(), request=request)
+        if order == True:
+            au.set_available()
+        elif order == False:
+            au.set_unavailable()
+        return au
+
+    def update(self, instance, validated_data):
+        location = validated_data.get('location')
+        article = validated_data.get('article')
+        order = validated_data.get('order')
+        available = validated_data.get('available')
+        request = self.context['request']
+        if instance.available == True and available == False:
+            instance.set_unavailable()
+        elif instance.available == False and available == True:
+            instance.set_available()
+        if instance.order == None and order != None:
+            instance.set_to_order(order.id)
+        elif instance.order != None and order == None:
+            instance.set_to_order(None)
+        if location:
+            instance.location = location
+        if article:
+            instance.article = article
+        instance.save()
+        return instance
+
 class OrderSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name='order_detail', read_only=True)
     id = serializers.IntegerField(read_only=True)
@@ -96,9 +140,7 @@ class OrderSerializer(serializers.Serializer):
     buyer = serializers.PrimaryKeyRelatedField(queryset=Buyer.objects.all())
     whoAdded = serializers.PrimaryKeyRelatedField(read_only=True)
     whoReleased = serializers.PrimaryKeyRelatedField(read_only=True)
-    ## TODO: ArticleUnit list - After ArticleUnit implemetation
-    ##
-
+    articles = ArticleUnitSerializer(source='get_articleunits', many=True, read_only=True)
 
     def create(self, validated_data):
         discount = validated_data.get('discount')
@@ -130,3 +172,5 @@ class OrderSerializer(serializers.Serializer):
 
         instance.save()
         return instance
+
+
