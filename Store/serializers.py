@@ -5,17 +5,21 @@ from rest_framework import serializers
 
 
 class LocationSerializer(serializers.Serializer):
+    # URL - dla ułatwienia dostępu
     url = serializers.HyperlinkedIdentityField(view_name='location_detail', read_only=True)
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100, required=True)
     description = serializers.CharField(max_length=1000, allow_blank=True)
 
     def create(self, validated_data):
+        # Tworzymy obiekt na podstawie przekazanych w widoku danych
         return Location.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
+        # Aktualizujemy obiekt na podstawie przekazanych w widoku danych
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
+        # Zapisujemy zmiany w instancji
         instance.save()
         return instance
 

@@ -43,15 +43,19 @@ def location_detail(request, pk):
         return render_to_response('login.html', { 'msg': msg }, context_instance=RequestContext(request))
     else:
         try:
+            # Pobieranie obiektu o danym ID
             loc = Location.objects.get(id=pk)
         except Location.DoesNotExist:
+            # Jeśli nie istnieje - 404
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         if request.method == 'GET':
+            # Dla metody GET - serializujemy i zwracamy
             serializer = LocationSerializer(loc, context={'request': request})
             return Response(serializer.data)
 
         if request.method == 'PUT':
+            # Dla metody PUT - serializujemy wraz z danymi Requesta, zapisujemy i zwracamy
             serializer = LocationSerializer(loc, context={'request': request}, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -60,6 +64,7 @@ def location_detail(request, pk):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         if request.method == 'DELETE':
+            # Dla metody DELETE, usuwamy
             loc.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
