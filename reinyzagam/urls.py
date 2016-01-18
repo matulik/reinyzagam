@@ -21,9 +21,14 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 from User import views as user_views
 from Store import views as store_views
+from webapp import views
 
 
 urlpatterns = format_suffix_patterns([
+    # webapp urls
+    url(r'^choose/$', views.choose),
+    url(r'^webapp/locations/$', views.locations),
+
     url(r'^$', user_views.login),
     url(r'^login/$', user_views.login),
     url(r'^logout/$', user_views.logout),
