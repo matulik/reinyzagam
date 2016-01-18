@@ -1,3 +1,5 @@
+// Funkcja odwołuje się do ID dynatable, tworzy ją, wysyła zapytanie GET dla danych
+// lokacji i wyświetla je
 function refresh() {
     var $dynamic_table = $("#dynamic_table");
     $.ajax({
@@ -19,6 +21,9 @@ function refresh() {
     });
 }
 
+// Funckja sprawdza czy dane są poprawne - nie jest konieczna, gdyż walidację
+// przeprowadza również API jednak dzięki niej nie potrzeba przeładowywać strony - wysyłać
+// zapytania przed walidacją
 function validation() {
     var test_name = true;
     var test_description = true;
@@ -54,6 +59,8 @@ function validation() {
     }
 }
 
+// Funkcja odświeża tabele - wywoływana przy dodawaniu/usuwaniu danych
+// z tabeli
 function table_refresh(data) {
     var dynatable = $('#dynamic_table').data("dynatable");
     dynatable.records.updateFromJson({records: data});
@@ -62,6 +69,7 @@ function table_refresh(data) {
     dynatable.dom.update();
 }
 
+// ZAPYTANIE DO REST API - dodaje nową lokację metodą POST zgodnie z dataString
 function addData(dataString) {
     $.ajax({
         type: 'POST',
@@ -75,6 +83,8 @@ function addData(dataString) {
     refresh();
 }
 
+// Funkcja pomocnicza - ustawia/usuwa klasę mouseover dla zaznaczonych przez mysz
+// obiektów
 function trmouseclick(i) {
     var row = $("tr").get(i.rowIndex);
     if (row.className == "mouseover")
@@ -84,6 +94,8 @@ function trmouseclick(i) {
     var ids = document.getElementsByClassName("mouseover");
 }
 
+// Funkcja zwraca zaznaczone numery obiektów (dane z kolumny ID)
+// Niezbędna do usuwania obiektów
 function return_checked() {
     var ret_ids = [];
     var ids = document.getElementsByClassName("mouseover");
@@ -92,6 +104,7 @@ function return_checked() {
     return ret_ids;
 }
 
+// ZAPYTANIE DO REST API - usunięcie obiektów metodą DELETE
 function delData(ids) {
     for (var i = 0; i < ids.length; i++) {
         var url = '/rest/location_detail/' + ids[i].toString() + '/';
@@ -107,6 +120,7 @@ function delData(ids) {
     refresh();
 }
 
+// Obsługa kliknięć myszy w dokumencie HTML
 $(document).ready(function () {
     refresh();
     $("#button_add").click(function () {
