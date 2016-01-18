@@ -18,7 +18,7 @@ from User.serializers import UserSerializer
 def login(request):
     # Jeżeli użytkownik jest już zalogowany - przenieś do podstrony
     if Login.auth(request):
-        return redirect('/rest/')
+        return redirect('/choose/')
     else:
         # Wykonaj, jeżeli zostało wysłane zapytanie
         if request.method == 'POST':
@@ -38,7 +38,7 @@ def login(request):
                 print u'Login succesfully'
                 Login.login(request)
                 # Przekierowanie do odpowiedniej podstrony
-                return redirect('/rest/')
+                return redirect('/choose/')
             else:
                 msg = u'Error. Bad username or password.'
                 return render_to_response('login.html', { 'msg': msg }, context_instance=RequestContext(request))

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    {% load staticfiles %}
+    <!-- Dodawanie arkusza stylów dla dynamicznej tabeli "dynatable" -->
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery.dynatable.css' %}">
+
+    <!-- Dodanie biblioteki jquery, dynatable oraz własnych funkcji obsługi zapytań -->
+    <script type="text/javascript" src="{% static 'jquery-1.11.3.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'jquery.dynatable.js' %}"></script>
+    <script type="text/javascript" src="{% static 'locations.js' %}"></script>
+
+    <meta charset="UTF-8">
+    <title>Reinyzagam REST - Login</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            margin-top: 50px;
+        }
+        fieldset {
+            border-style: none;
+        }
+
+        .mouseover {
+            background-color: gray;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<h1>Reinyzagam REST - locations</h1>
+<!-- Formularz - do wprowadzania danych nowej lokacji. Nie wykonuje zapytania!(obsługa w locations.js) -->
+<form>
+    <fieldset>
+        <input id="name" name="name" type="text" placeholder="Nazwa kategorii"><br>
+        <div id="error_name"></div>
+
+        <input id="description" name="description" type="text" placeholder="Opis kategorii"><br>
+        <div id="error_description"></div>
+
+        <input type="button" id="button_add" value="Dodaj"><br>
+        <input type="button" id="button_del" value="Usuń zaznaczone">
+
+        <div id="delete_confirm"></div>
+    </fieldset>
+</form>
+<br><br><br>
+<!-- Utworzenie tabeli o id "dynamic_table". Musi odpowiadać id pobieranemu w locations.js! -->
+<table id="dynamic_table">
+    <thead>
+    <th data-dynatable-column="id">ID</th>
+    <th data-dynatable-column="name">Nazwa lokalizacji</th>
+    <th data-dynatable-column="description">Opis lokalizacji</th>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+</body>
+</html>
